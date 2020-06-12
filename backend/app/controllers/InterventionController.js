@@ -1,5 +1,6 @@
 const { Interventions } = require("../models");
 const { Users } = require("../models");
+const { Scales } = require("../models");
 const { Op, fn, col, literal, QueryTypes, Sequelize } = require("sequelize");
 const rawQueries = require('../../config/rawQueries');
 const moment = require('moment');
@@ -19,7 +20,7 @@ module.exports = {
   },
 
   async store(req, res) {
-    const {login, password, observation } = req.body;
+    const {login, password, scale, observation } = req.body;
     const date = new Date();
     let date_time_intervention = moment().format();
 
@@ -51,10 +52,25 @@ module.exports = {
         }
       );
     }  
+
+    const scaleFinded = await Scales.findOne({
+      where: { 
+        id: scale
+      }
+    });
+
+    if (!scaleFinded) {
+      return res.status(403).json(
+        { 
+          attention: "Balança informada não encontrada. Verifique."
+        }
+      );
+    } 
     
     const InterventionCreated = await Interventions.create(
       {
         userId: loginFinded.id,
+        scaleId: scaleFinded.id,
         date_time_intervention,
         observation
       }
@@ -62,15 +78,18 @@ module.exports = {
 
     return res.json(
       { 
-        success: "Cadastro efetuado com sucesso."
+        success: "Intervenção registrada com sucesso."
       }
     );
   },
 
   async show(req, res) {
+    const { scaleId } = req.params;
 
     const [{ date_time_intervention }] = await  rawQueries.query(
-      'SELECT date_time_intervention FROM "Interventions" ORDER BY id DESC LIMIT 1', 
+      `SELECT date_time_intervention FROM "Interventions" 
+          WHERE "scaleId" = ${scaleId} 
+        ORDER BY id DESC LIMIT 1`, 
       {
         type: QueryTypes.SELECT
       }

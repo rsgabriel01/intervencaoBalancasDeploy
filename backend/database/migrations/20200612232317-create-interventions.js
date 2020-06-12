@@ -12,8 +12,16 @@ module.exports = {
       userId: {
         allowNull: false,
         type: DataTypes.BIGINT,
-        references: {         // user hasmany user_phase 1:n
+        references: {         // user hasmany 1:n
           model: 'Users',
+          key: 'id'
+        }
+      },
+      scaleId: {
+        allowNull: false,
+        type: DataTypes.BIGINT,
+        references: {         // scale hasmany  1:n
+          model: 'Scales',
           key: 'id'
         }
       },

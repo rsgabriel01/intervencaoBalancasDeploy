@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: false
   });
   Users.associate = function(models) {
-    Users.hasMany(models.Interventions, {foreignKey: 'userId'})
+    Users.hasMany(models.Interventions, {foreignKey: 'userId'});
   };
   return Users;
 };

@@ -17,7 +17,7 @@ routes.get("/interventions", InterventionController.index);
 
 routes.post("/interventions/store", InterventionController.store);
 
-routes.get("/interventions/last", InterventionController.show);
+routes.get("/interventions/last/:scaleId", InterventionController.show);
 
 
 
