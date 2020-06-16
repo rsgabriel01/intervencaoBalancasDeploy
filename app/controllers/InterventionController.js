@@ -4,11 +4,15 @@ const { Scales } = require("../models");
 const { Op, fn, col, literal, QueryTypes, Sequelize } = require("sequelize");
 const rawQueries = require('../../config/rawQueries');
 const moment = require('moment');
+
 require('moment-precise-range-plugin');
+const { calculateRecord, calculateTimeLastIntervention } = require('../components/calculateRecord');
 
 
 
 module.exports = {
+
+//#region  INDEX
   async index(req, res) {
     try {
       const interventions = await Interventions.findAll();
@@ -18,12 +22,14 @@ module.exports = {
       console.error(error); 
     }
   },
+//#endregion
 
+//#region STORE
   async store(req, res) {
     const {login, password, scale, observation } = req.body;
-    const date = new Date();
-    let date_time_intervention = moment().format();
-
+    
+    const date_now = moment().format();
+      
     const loginExists = await Users.findOne({
       where: { login }
     });
@@ -67,11 +73,25 @@ module.exports = {
       );
     } 
     
+    const [{ date_time_intervention }] = await  rawQueries.query(
+      `SELECT date_time_intervention FROM "Interventions" 
+          WHERE "scaleId" = ${scale} 
+        ORDER BY id DESC LIMIT 1`, 
+      {
+        type: QueryTypes.SELECT
+      }
+    );
+
+    const date_time_last_intervention = moment.utc(date_time_intervention).local().format();
+
+    const counttime_milliseconds = moment().diff(date_time_last_intervention);
+
     const InterventionCreated = await Interventions.create(
       {
         userId: loginFinded.id,
         scaleId: scaleFinded.id,
-        date_time_intervention,
+        date_time_intervention: date_now,
+        counttime_milliseconds,
         observation
       }
     );
@@ -83,6 +103,9 @@ module.exports = {
     );
   },
 
+  //#endregion
+
+//#region SHOW
   async show(req, res) {
     const { scaleId } = req.params;
 
@@ -95,12 +118,31 @@ module.exports = {
       }
     );
 
-    let date_time_last_intervention = moment.utc(date_time_intervention).local().format();
+    const [{ counttime_milliseconds }] = await  rawQueries.query(
+      `SELECT counttime_milliseconds FROM "Interventions" 
+          WHERE "scaleId" = ${scaleId} 
+        ORDER BY counttime_milliseconds DESC LIMIT 1`, 
+      {
+        type: QueryTypes.SELECT
+      }
+    );
 
-    let date_now = moment().format();
+    const date_time_last_intervention = moment.utc(date_time_intervention).local().format();
 
-    let diff = moment.preciseDiff(date_time_last_intervention, date_now, true); 
+    // let diff = moment.preciseDiff(date_time_last_intervention, date_now, true); 
+
+    const milliseconds_last_intervention = moment().diff(date_time_last_intervention);
+
+    // console.log(milliseconds_last_intervention);
     
-    return res.json(diff);
+    // console.log(calculateTimeLastIntervention(milliseconds_last_intervention));
+    
+    
+    return res.json({ 
+      tempLastIntervention: calculateTimeLastIntervention(milliseconds_last_intervention), 
+      recorde : calculateRecord(counttime_milliseconds)
+    });
   }
+//#endregion
+
 };

@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.BIGINT,
     scaleId: DataTypes.BIGINT,
     date_time_intervention: DataTypes.DATE,
+    counttime_milliseconds: DataTypes.BIGINT,
     observation: DataTypes.STRING
   }, 
   {

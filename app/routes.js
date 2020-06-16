@@ -15,7 +15,7 @@ routes.get("/", (req, res) => {
 
 routes.get("/interventions", InterventionController.index);
 
-routes.post("/interventions/store", InterventionController.store);
+routes.post("/interventions/create", InterventionController.store);
 
 routes.get("/interventions/last/:scaleId", InterventionController.show);
 

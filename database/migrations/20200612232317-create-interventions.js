@@ -29,6 +29,10 @@ module.exports = {
         allowNull: false,
         type: DataTypes.DATE
       },
+      counttime_milliseconds: {
+        allowNull: false,
+        type: DataTypes.BIGINT
+      },
       observation: {
         allowNull: true,
         type: DataTypes.STRING
