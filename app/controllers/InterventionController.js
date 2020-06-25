@@ -136,9 +136,9 @@ module.exports = {
 
     const milliseconds_actual_count = moment().diff(date_time_last_intervention);
 
-    console.log(miliseconds_record);
+    // console.log(miliseconds_record);
 
-    console.log(milliseconds_actual_count);
+    // console.log(milliseconds_actual_count);
 
     return res.json({ 
       tempLastIntervention: calculateTimeLastIntervention(milliseconds_actual_count), 
