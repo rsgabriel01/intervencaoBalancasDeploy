@@ -95,9 +95,12 @@ module.exports = {
         observation
       }
     );
+    console.log(InterventionCreated);
+    
 
     return res.json(
       { 
+        // InterventionCreated.id,
         success: "Intervenção registrada com sucesso."
       }
     );
