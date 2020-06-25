@@ -86,7 +86,7 @@ module.exports = {
 
     const counttime_milliseconds = moment().diff(date_time_last_intervention);
 
-    const InterventionCreated = await Interventions.create(
+    const { id } = await Interventions.create(
       {
         userId: loginFinded.id,
         scaleId: scaleFinded.id,
@@ -95,12 +95,10 @@ module.exports = {
         observation
       }
     );
-    console.log(InterventionCreated);
     
-
     return res.json(
       { 
-        // InterventionCreated.id,
+        id,
         success: "Intervenção registrada com sucesso."
       }
     );
