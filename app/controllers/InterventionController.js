@@ -127,21 +127,22 @@ module.exports = {
         type: QueryTypes.SELECT
       }
     );
+    
+    const miliseconds_record = counttime_milliseconds;
 
     const date_time_last_intervention = moment.utc(date_time_intervention).local().format();
 
     // let diff = moment.preciseDiff(date_time_last_intervention, date_now, true); 
 
-    const milliseconds_last_intervention = moment().diff(date_time_last_intervention);
+    const milliseconds_actual_count = moment().diff(date_time_last_intervention);
 
-    // console.log(milliseconds_last_intervention);
-    
-    // console.log(calculateTimeLastIntervention(milliseconds_last_intervention));
-    
-    
+    console.log(miliseconds_record);
+
+    console.log(milliseconds_actual_count);
+
     return res.json({ 
-      tempLastIntervention: calculateTimeLastIntervention(milliseconds_last_intervention), 
-      recorde : calculateRecord(counttime_milliseconds)
+      tempLastIntervention: calculateTimeLastIntervention(milliseconds_actual_count), 
+      recorde : miliseconds_record < milliseconds_actual_count ? calculateRecord(milliseconds_actual_count) : calculateRecord(miliseconds_record)  
     });
   }
 //#endregion
